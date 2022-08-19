@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Enables an AWS Config rule to check whether S3 buckets haev encryption enabled
+Resources:
+  GUARDRULE:
+    Type: AWS::Config::ConfigRule
+    Properties: 
+      ConfigRuleName: "test-guard-s3-kms-encryption"
+      Scope: 
+        ComplianceResourceTypes:
+          - AWS::S3::Bucket
+      Source: 
+        Owner: CUSTOM_POLICY
+        CustomPolicyDetails:
+          EnableDebugLogDelivery: "False"
+          PolicyRuntime: guard-2.x.x
+          PolicyText: |
+            let s3_bucket_encryption = supplementaryConfiguration.ServerSideEncryptionConfiguration.rules.*[ applyServerSideEncryptionByDefault.sseAlgorithm  == 'aws:kms' ]
+            rule check_kmskey {
+            %s3_bucket_encryption !empty
+            }
+        SourceDetails: 
+        - 
+          EventSource: "aws.config"
+          MessageType: "ConfigurationItemChangeNotification"
+  
+
