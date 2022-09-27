@@ -20,3 +20,19 @@ Build scripts in CodeBuild would  deploy multiple conformance packs to AWS Organ
 Develop branch in GitLab would deploy to DEV AWS Organization and master to QA/Hom and Prod AWS Org. Each AWS org has ~2000 AWS accounts.
 All configuration snapshots and history will be stored in central S3 bucket. All AWS accounts would send the configuration change events to central SNS topic which is subscribed by SQS .
 Optional- To visualize AWS Config data use Athena and Quicksight.
+
+
+
+1. Need to deploy the rules to a specific OUs - Currently not supported. Workaround to exclude AWS accounts.1000 limits
+2. Need to deploy different set of rules based on AWS account
+3. Need to minimize the number of lambdas for a custom rule- Use CFN Guard
+4. Lambda should be in a central account - Use RDK
+5. Scalable to support 3000 accounts/Org
+6. Reduced deployment time 
+7. Easy to debug config rules - Create unit test cases, test in non-prod
+8. No manual deployment of rules when a new Account is created - Deploy at Org level
+9. Cost should be minimum
+10.No throttling and quota limitations
+11.Use CI/CD pipeline
+12.AWS Config support for all the services currenlty monitored by Turbot - ElasticCache,AmazonMQ and ApacheAirflow are not supported- Additional overhead to create periodic rules and track deletion of resouces
+13.Centralize config snapshots, history files and notifications in a central account
